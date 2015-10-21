@@ -62,8 +62,11 @@ describe "PUT/PATCH #update" do
     context "when is successfully updated" do
       before(:each) do
         @user = FactoryGirl.create :user
+        request.headers['Authorization'] = @user.auth_token
         patch :update, { id: @user.id,
                          user: { email: "newmail@example.com" } }, format: :json
+
+
       end
 
       it "renders the json representation for the updated user" do
@@ -77,6 +80,7 @@ describe "PUT/PATCH #update" do
     context "when is not created" do
       before(:each) do
         @user = FactoryGirl.create :user
+        request.headers['Authorization'] = @user.auth_token
         patch :update, { id: @user.id,
                          user: { email: "bademail.com" } }, format: :json
       end
@@ -86,7 +90,7 @@ describe "PUT/PATCH #update" do
         expect(user_response).to have_key(:errors)
       end
 
-      it "renders the json errors on whye the user could not be created" do
+      it "renders the json errors on why the user could not be created" do
         user_response = JSON.parse(response.body, symbolize_names: true)
         expect(user_response[:errors][:email]).to include "is invalid"
       end
@@ -98,6 +102,7 @@ describe "PUT/PATCH #update" do
   describe "DELETE #destroy" do
     before(:each) do
       @user = FactoryGirl.create :user
+      request.headers['Authorization'] = @user.auth_token
       delete :destroy, { id: @user.id }, format: :json
     end
 
